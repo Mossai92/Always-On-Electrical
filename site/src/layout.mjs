@@ -1,5 +1,5 @@
 // Page shell: head, header/nav, footer. Every page goes through page().
-import { SITE, NAV, FOOTER, countiesProse } from './content.mjs';
+import { SITE, NAV, FOOTER, REGISTERED, DEMO, countiesProse } from './content.mjs';
 import { wordmark, ICONS } from './brand.mjs';
 
 export const esc = (s) => String(s).replace(/&/g, '&amp;').replace(/</g, '&lt;').replace(/>/g, '&gt;').replace(/"/g, '&quot;');
@@ -36,7 +36,7 @@ function footer() {
       <div class="site-footer__brand">${wordmark()}<p>${FOOTER.blurb}</p></div>
       <div class="site-footer__col"><h2>Contact</h2><ul><li><a href="tel:${SITE.phoneTel}">Call or text ${SITE.phone}</a></li><li><a href="https://wa.me/${SITE.whatsapp}" rel="noopener">WhatsApp</a></li><li><a href="mailto:${SITE.email}">${SITE.email}</a></li></ul></div>
       <div class="site-footer__col"><h2>Pages</h2><ul>${FOOTER.pages.map(([h, t]) => `<li><a href="${h}">${t}</a></li>`).join('')}</ul></div>
-      <div class="site-footer__col"><h2>Registered</h2><ul><li>Safe Electric REC ${SITE.rec}</li><li>Insured with ${SITE.insurer}</li><li>${a.street}, ${a.locality}, ${a.region}</li></ul></div>
+      <div class="site-footer__col"><h2>Registered</h2><ul>${REGISTERED.map((r) => `<li>${r}</li>`).join('')}<li>${a.street}, ${a.locality}, ${a.region}</li></ul></div>
     </div>
     <div class="site-footer__bottom"><span>© ${SITE.year} ${SITE.name}</span><span>${SITE.domain}</span></div>
   </div>
@@ -66,7 +66,7 @@ export function page({ slug, title, description, body, active = '', jsonLd = nul
 <meta property="og:locale" content="en_IE">
 <meta name="twitter:card" content="summary_large_image">
 <meta name="twitter:image" content="${SITE.url}/assets/img/og-image.png">
-${noindex ? '<meta name="robots" content="noindex, nofollow">' : '<meta name="robots" content="index, follow">'}
+${noindex || DEMO ? '<meta name="robots" content="noindex, nofollow">' : '<meta name="robots" content="index, follow">'}
 <meta name="theme-color" content="#201E1D">
 <link rel="icon" href="assets/img/favicon.svg" type="image/svg+xml">
 <link rel="icon" href="assets/img/favicon-32.png" sizes="32x32" type="image/png">
@@ -76,7 +76,7 @@ ${noindex ? '<meta name="robots" content="noindex, nofollow">' : '<meta name="ro
 <link rel="stylesheet" href="assets/css/site.css">
 ${jsonLd ? `<script type="application/ld+json">${JSON.stringify(jsonLd)}</script>` : ''}
 </head>
-<body class="${bodyClass}">
+<body class="${bodyClass}"${DEMO ? ' data-demo="true"' : ''}>
 <a class="skip-link" href="#main">Skip to content</a>
 ${header(active)}
 <main id="main">

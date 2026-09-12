@@ -1,11 +1,12 @@
 // Checks the built site in dist/: every internal link and asset resolves, every fragment link
 // points at an existing id, and every page has a title, a description, a canonical URL and one h1.
-// Usage: node check.mjs   (run from the site/ folder, after build.mjs)
+// Usage: node check.mjs [dist-demo]   (run from the site/ folder, after build.mjs)
 import { readdirSync, readFileSync, existsSync } from 'node:fs';
 import { fileURLToPath } from 'node:url';
 import { dirname, join, posix } from 'node:path';
 
-const dist = join(dirname(fileURLToPath(import.meta.url)), 'dist');
+const dist = join(dirname(fileURLToPath(import.meta.url)), process.argv[2] || 'dist');
+const demo = dist.endsWith('dist-demo');
 const pages = readdirSync(dist).filter((f) => f.endsWith('.html'));
 const ids = new Map();
 for (const p of pages) {
@@ -40,7 +41,10 @@ for (const p of pages) {
     }
   }
 }
-for (const f of ['sitemap.xml', 'robots.txt', '.htaccess', 'assets/site.webmanifest', 'assets/img/og-image.png', 'assets/img/icon-512.png', 'api/request.php']) {
+const required = demo
+  ? ['robots.txt', '.nojekyll', 'assets/site.webmanifest', 'assets/img/og-image.png', 'assets/img/icon-512.png']
+  : ['sitemap.xml', 'robots.txt', '.htaccess', 'assets/site.webmanifest', 'assets/img/og-image.png', 'assets/img/icon-512.png', 'api/request.php'];
+for (const f of required) {
   if (!existsSync(join(dist, f))) problems.push(`missing ${f}`);
 }
 if (problems.length) {

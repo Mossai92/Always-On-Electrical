@@ -1,5 +1,5 @@
 // The pages. Each returns a full HTML document via page().
-import { SITE, HERO, STATS, SERVICES, TRUST, ABOUT, AREA, AREAS, REQUEST, WINDOWS, REFERENCES, REVIEWS, countiesProse, countiesDots } from './content.mjs';
+import { SITE, DEMO, HERO, STATS, SERVICES, TRUST, ABOUT, AREA, AREAS, REQUEST, WINDOWS, REFERENCES, REVIEWS, countiesProse, countiesDots } from './content.mjs';
 import { mark, physButton, ICONS, stars } from './brand.mjs';
 import { page, flatBtn, ghostBtn, phoneLink, whatsappLink, eyebrow } from './layout.mjs';
 
@@ -218,7 +218,7 @@ export function privacy() {
   <div class="container">
     ${eyebrow('Privacy policy')}
     <h1>How your details are used</h1>
-    <p class="lede">Plain-English version first, the formal parts after. [DRAFT: review before launch]</p>
+    <p class="lede">Plain-English version first, the formal parts after.${DEMO ? '' : ' [DRAFT: review before launch]'}</p>
   </div>
 </section>
 <section class="section section--light">
@@ -243,11 +243,11 @@ export function privacy() {
     </ul>
     <p>Nobody else, unless the law requires it. Nothing is sold or used for advertising.</p>
     <h2>How long it is kept</h2>
-    <p>Requests that do not turn into a job are deleted within [6] months. Records of completed work, including certificates, are kept for [6] years for warranty, insurance and Safe Electric purposes. Photos are deleted once the job is closed unless they form part of the work record.</p>
+    <p>Requests that do not turn into a job are deleted within ${DEMO ? '6' : '[6]'} months. Records of completed work, including certificates, are kept for ${DEMO ? '6' : '[6]'} years for warranty, insurance and Safe Electric purposes. Photos are deleted once the job is closed unless they form part of the work record.</p>
     <h2>Your rights</h2>
     <p>You can ask what is held about you, have it corrected or deleted, restrict or object to its use, or receive a copy. Email <a href="mailto:${SITE.email}">${SITE.email}</a> and it will be dealt with within a month. If you are unhappy with how your details were handled you can complain to the Data Protection Commission, <a href="https://www.dataprotection.ie" rel="noopener">dataprotection.ie</a>.</p>
     <h2>Changes</h2>
-    <p>This page is updated if anything above changes. Last updated [DATE].</p>
+    <p>This page is updated if anything above changes. Last updated ${DEMO ? 'September 2026' : '[DATE]'}.</p>
   </div>
 </section>`;
   return page({ slug: 'privacy', title: 'Privacy policy', description: `How ${SITE.name} uses the details you send through the website and by phone.`, body });

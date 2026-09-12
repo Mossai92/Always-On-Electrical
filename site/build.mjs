@@ -1,14 +1,21 @@
-// Builds the static site into dist/ (what gets uploaded to public_html on Eirhost).
-// Usage: node build.mjs   (run from the site/ folder)
+// Builds the static site.
+//   node build.mjs          -> dist/        the real site (upload to public_html on Eirhost)
+//   node build.mjs --zip    -> also writes always-on-electrical-site.zip for cPanel's File Manager
+//   node build.mjs --demo   -> dist-demo/   a shareable preview: nothing sends, unknown facts hidden, not indexed
 import { mkdirSync, writeFileSync, readFileSync, cpSync, rmSync, existsSync } from 'node:fs';
 import { fileURLToPath } from 'node:url';
 import { dirname, join } from 'node:path';
-import { SITE } from './src/content.mjs';
-import * as pages from './src/pages.mjs';
+
+const args = process.argv.slice(2);
+const demo = args.includes('--demo');
+if (demo) process.env.AOE_DEMO = '1';
+// content reads the demo flag when it loads, so it is imported after the flag is set
+const { SITE } = await import('./src/content.mjs');
+const pages = await import('./src/pages.mjs');
 
 const root = dirname(fileURLToPath(import.meta.url));
 const src = join(root, 'src');
-const dist = join(root, 'dist');
+const dist = join(root, demo ? 'dist-demo' : 'dist');
 
 // keep a local api/config.php across rebuilds (it is never committed)
 const localConfig = join(dist, 'api', 'config.php');
@@ -29,17 +36,21 @@ const PAGES = [
 for (const [name, render] of PAGES) writeFileSync(join(dist, name), render());
 
 cpSync(join(src, 'assets'), join(dist, 'assets'), { recursive: true });
-if (existsSync(join(src, 'api'))) cpSync(join(src, 'api'), join(dist, 'api'), { recursive: true, filter: (p) => !/config\.php$/.test(p) || p.endsWith('config.example.php') });
-if (keptConfig) writeFileSync(localConfig, keptConfig);
+if (!demo && existsSync(join(src, 'api'))) cpSync(join(src, 'api'), join(dist, 'api'), { recursive: true, filter: (p) => !/config\.php$/.test(p) || p.endsWith('config.example.php') });
+if (!demo && keptConfig) writeFileSync(localConfig, keptConfig);
 
-const today = new Date().toISOString().slice(0, 10);
-writeFileSync(join(dist, 'sitemap.xml'), `<?xml version="1.0" encoding="UTF-8"?>
+if (demo) {
+  writeFileSync(join(dist, 'robots.txt'), 'User-agent: *\nDisallow: /\n');
+  writeFileSync(join(dist, '.nojekyll'), ''); // GitHub Pages: serve as-is
+} else {
+  const today = new Date().toISOString().slice(0, 10);
+  writeFileSync(join(dist, 'sitemap.xml'), `<?xml version="1.0" encoding="UTF-8"?>
 <urlset xmlns="http://www.sitemaps.org/schemas/sitemap/0.9">
 ${PAGES.filter(([, , o]) => o.sitemap).map(([n, , o]) => `  <url><loc>${SITE.url}/${n === 'index.html' ? '' : n}</loc><lastmod>${today}</lastmod><priority>${o.priority}</priority></url>`).join('\n')}
 </urlset>
 `);
-writeFileSync(join(dist, 'robots.txt'), `User-agent: *\nAllow: /\nDisallow: /api/\nSitemap: ${SITE.url}/sitemap.xml\n`);
-writeFileSync(join(dist, '.htaccess'), `# Always On Electrical — Apache (cPanel) configuration
+  writeFileSync(join(dist, 'robots.txt'), `User-agent: *\nAllow: /\nDisallow: /api/\nSitemap: ${SITE.url}/sitemap.xml\n`);
+  writeFileSync(join(dist, '.htaccess'), `# Always On Electrical — Apache (cPanel) configuration
 Options -Indexes
 ErrorDocument 404 /404.html
 
@@ -78,11 +89,11 @@ ErrorDocument 404 /404.html
   Require all denied
 </FilesMatch>
 `);
+}
 
-console.log(`built ${PAGES.length} pages into dist/`);
+console.log(`built ${PAGES.length} pages into ${demo ? 'dist-demo' : 'dist'}/`);
 
-// node build.mjs --zip  -> always-on-electrical-site.zip next to this file, for uploading through cPanel's File Manager
-if (process.argv.includes('--zip')) {
+if (args.includes('--zip') && !demo) {
   const { spawnSync } = await import('node:child_process');
   const zip = join(root, 'always-on-electrical-site.zip');
   rmSync(zip, { force: true });

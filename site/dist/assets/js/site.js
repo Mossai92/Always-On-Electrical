@@ -134,6 +134,12 @@
         showStatus('error', 'A few details are missing or need a look: the highlighted fields.');
         return;
       }
+      if (document.body.getAttribute('data-demo') === 'true') {
+        // preview build: nothing is sent
+        e.preventDefault();
+        showStatus('ok', 'This is a preview, so nothing was sent. On the live site this request goes straight to Peter by email (and text), and you get a confirmation email.');
+        return;
+      }
       if (!window.fetch || !window.FormData) return; // plain submit; the handler redirects to thank-you.html
       e.preventDefault();
       var button = form.querySelector('button[type="submit"]');

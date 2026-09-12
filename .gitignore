@@ -16,3 +16,4 @@ site/dist/api/data/*
 !site/dist/api/data/.htaccess
 !site/dist/api/data/.gitkeep
 site/*.zip
+site/dist-demo/

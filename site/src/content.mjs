@@ -21,7 +21,14 @@ export const SITE = {
   year: 2026,
 };
 
+// Demo build (node build.mjs --demo): a preview to share before launch. Unknown facts are left out
+// rather than shown in brackets, the reviews page is kept out of the menu, and the form does not send.
+export const DEMO = process.env.AOE_DEMO === '1';
+if (DEMO) SITE.showReviewsInNav = false;
+
 export const isPlaceholder = (v) => /^\[.*\]$/.test(String(v).trim());
+// A fact for the page: the real value when known, otherwise the bracketed placeholder (or, in a demo, a wording without it).
+export const fact = (value, withValue, without) => (DEMO && isPlaceholder(value) ? without : withValue(value));
 export const countiesProse = () => `${SITE.counties.slice(0, -1).join(', ')} and ${SITE.counties.at(-1)}`;
 export const countiesDots = () => SITE.counties.join(' · ');
 
@@ -53,7 +60,7 @@ export const HERO = {
 };
 
 export const STATS = [
-  ['shield', `Safe Electric registered · REC ${SITE.rec}`],
+  ['shield', fact(SITE.rec, (v) => `Safe Electric registered · REC ${v}`, 'Safe Electric registered')],
   ['umbrella', 'Fully insured'],
   ['clock', HOURS_PROSE],
   ['pin', countiesProse()],
@@ -81,9 +88,13 @@ export const SERVICES = [
 ];
 
 export const TRUST = [
-  ['shield', 'Safe Electric registered', `On the national register of electrical contractors. REC no. ${SITE.rec}`],
-  ['umbrella', 'Fully insured', `Public liability cover on every job. Insured by ${SITE.insurer}.`],
+  ['shield', 'Safe Electric registered', fact(SITE.rec, (v) => `On the national register of electrical contractors. REC no. ${v}`, 'On the national register of electrical contractors.')],
+  ['umbrella', 'Fully insured', fact(SITE.insurer, (v) => `Public liability cover on every job. Insured by ${v}.`, 'Public liability cover on every job.')],
   ['pin', 'Local to you', `Based in ${SITE.town}, working across ${countiesProse()}.`],
+];
+export const REGISTERED = [
+  fact(SITE.rec, (v) => `Safe Electric REC ${v}`, 'Safe Electric registered'),
+  fact(SITE.insurer, (v) => `Insured with ${v}`, 'Fully insured'),
 ];
 
 export const ABOUT = {
