@@ -24,7 +24,11 @@ export const SITE = {
 // Demo build (node build.mjs --demo): a preview to share before launch. Unknown facts are left out
 // rather than shown in brackets, the reviews page is kept out of the menu, and the form does not send.
 export const DEMO = process.env.AOE_DEMO === '1';
-if (DEMO) SITE.showReviewsInNav = false;
+if (DEMO) {
+  SITE.showReviewsInNav = false;
+  // canonical and social-preview URLs point at the preview itself, so a shared link gets a proper card
+  SITE.url = process.env.AOE_DEMO_URL || 'https://mossai92.github.io/Always-On-Electrical';
+}
 
 export const isPlaceholder = (v) => /^\[.*\]$/.test(String(v).trim());
 // A fact for the page: the real value when known, otherwise the bracketed placeholder (or, in a demo, a wording without it).
