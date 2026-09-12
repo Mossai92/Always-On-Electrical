@@ -80,3 +80,16 @@ ErrorDocument 404 /404.html
 `);
 
 console.log(`built ${PAGES.length} pages into dist/`);
+
+// node build.mjs --zip  -> always-on-electrical-site.zip next to this file, for uploading through cPanel's File Manager
+if (process.argv.includes('--zip')) {
+  const { spawnSync } = await import('node:child_process');
+  const zip = join(root, 'always-on-electrical-site.zip');
+  rmSync(zip, { force: true });
+  // bsdtar (Windows 10+ ships it at System32\tar.exe) writes zip entries with forward slashes,
+  // which is what cPanel's extractor expects; PowerShell's Compress-Archive does not.
+  const tar = process.platform === 'win32' ? join(process.env.SystemRoot || 'C:\\Windows', 'System32', 'tar.exe') : 'tar';
+  // a local api/config.php must never travel in the zip: the server keeps its own
+  const r = spawnSync(tar, ['-a', '-c', '-f', zip, '--exclude', './api/config.php', '--exclude', './api/data/*.json', '--exclude', './api/data/*.log', '-C', dist, '.'], { stdio: 'inherit' });
+  console.log(r.status === 0 && existsSync(zip) ? `zipped dist/ into ${zip}` : 'zip failed');
+}

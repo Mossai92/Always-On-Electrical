@@ -233,16 +233,15 @@ export function privacy() {
       <li>Any photos you attach.</li>
       <li>When you call, text or WhatsApp, whatever you send in that message.</li>
     </ul>
-    <p>The website itself sets no cookies and uses no analytics. The hosting provider keeps standard server logs (IP address, pages requested, time) for security, for a short period.</p>
+    <p>The website sets no cookies and uses no analytics. To stop abuse of the form, the request handler keeps a scrambled (hashed) version of your connection's address for one hour, and a log of the time and outcome of each request that holds no personal details. The hosting provider keeps standard server logs (address, pages requested, time) for security, for a short period.</p>
     <h2>Why, and on what basis</h2>
     <p>To answer your enquiry, arrange the work and carry it out. Under the GDPR this is processing needed to take steps at your request before entering into a contract, and to perform that contract (Article 6(1)(b)). Keeping records of completed work is a legitimate interest (Article 6(1)(f)) and, for certified work, a legal obligation.</p>
     <h2>Who else sees it</h2>
     <ul>
-      <li>The email provider that delivers the request to Peter and the confirmation to you.</li>
-      <li>The text-message provider that sends Peter the short alert. [SMS PROVIDER NAME, and where their servers are]</li>
-      <li>The hosting provider, Eirhost, on whose servers the website runs.</li>
+      <li>The hosting provider, Eirhost, whose servers run the website and whose mail system delivers the request to Peter and the confirmation to you. Your request travels as an email, with any photos attached.</li>
+      <li>Twilio, the text-message provider, only if text alerts are switched on: it then receives your name, phone number and a one-line summary of the job so Peter gets a text as well as the email. Twilio is based in the United States. [Confirm the data-transfer basis in Twilio's terms before switching texts on.]</li>
     </ul>
-    <p>Nobody else, unless the law requires it.</p>
+    <p>Nobody else, unless the law requires it. Nothing is sold or used for advertising.</p>
     <h2>How long it is kept</h2>
     <p>Requests that do not turn into a job are deleted within [6] months. Records of completed work, including certificates, are kept for [6] years for warranty, insurance and Safe Electric purposes. Photos are deleted once the job is closed unless they form part of the work record.</p>
     <h2>Your rights</h2>
@@ -264,7 +263,7 @@ export function thankYou() {
     <p>${flatBtn('Back to the home page', 'index.html')}</p>
   </div>
 </section>`;
-  return page({ slug: 'thank-you', title: 'Request received', description: 'Your callout request has been sent to Peter.', body });
+  return page({ slug: 'thank-you', title: 'Request received', description: 'Your callout request has been sent to Peter.', body, noindex: true });
 }
 
 // ---------- 404 ----------
@@ -276,5 +275,5 @@ export function notFound() {
     <p>${flatBtn('Go to the home page', 'index.html')}</p>
   </div>
 </section>`;
-  return page({ slug: '404', title: 'Page not found', description: 'Page not found.', body });
+  return page({ slug: '404', title: 'Page not found', description: 'Page not found.', body, noindex: true });
 }

@@ -44,21 +44,50 @@ SMS switch is on, and emails the customer a confirmation. Plain PHP 8, no librar
 Spam protection: a hidden honeypot field, a minimum time the form must have been open, and a per-IP
 rate limit. Bots get a quiet "success" and nothing is sent.
 
-## Deploying to Eirhost
+## Checking a build
 
-1. In cPanel, create the mailbox `noreply@alwaysonelectrical.ie` (nobody needs to read it; it is the
-   address the site sends from).
-2. Upload everything in `dist/` to `public_html/`.
-3. In `public_html/api/`, copy `config.example.php` to `config.php` and fill it in. Change `secret`
-   to a long random string.
-4. Open `https://alwaysonelectrical.ie/api/selftest.php?key=YOUR_SECRET`. It reports what the server
-   can do and sends a test email (and text, if SMS is on).
-5. Submit a real request from a phone. Check Peter gets the email and the customer gets the confirmation.
-6. Set `'selftest' => false` in `config.php`.
+```bash
+cd site && node build.mjs && node check.mjs
+```
+
+`check.mjs` confirms every internal link and asset resolves, every fragment link has a target, every
+page has a title, description, canonical URL and one heading, and lists any bracketed placeholders
+still on the pages. `node build.mjs --zip` also writes `always-on-electrical-site.zip` (ignored by
+git) for uploading in one go.
+
+## Launch checklist (Eirhost cPanel)
+
+1. **Domain.** Point `alwaysonelectrical.ie` at the Eirhost nameservers (Peter and Mossy have the
+   registrar login). Wait until `https://alwaysonelectrical.ie` shows the hosting's default page with a
+   padlock: cPanel's AutoSSL issues the certificate once the domain resolves. The site's `.htaccess`
+   forces HTTPS, so upload only after the padlock appears.
+2. **Mailbox.** In cPanel, create `noreply@alwaysonelectrical.ie`. Nobody needs to read it; it is the
+   address the site sends from, and mail providers trust it because it is on the same domain.
+3. **Upload.** In cPanel's File Manager, upload `always-on-electrical-site.zip` into `public_html/`,
+   extract it there, and delete the zip. Make sure `.htaccess` and the `api/` folder came across
+   (turn on "Show hidden files" in File Manager settings).
+4. **Configure.** In `public_html/api/`, copy `config.example.php` to `config.php` and fill it in.
+   Change `secret` to a long random string. Leave `sms.enabled` as `false` for now.
+5. **Self-test.** Open `https://alwaysonelectrical.ie/api/selftest.php?key=YOUR_SECRET`. It reports the
+   PHP version, upload limits and whether the data folder is writable, and sends a test email to
+   Peter. If the email does not arrive, check the spam folder, then the mailbox in step 2.
+6. **Real test.** From a phone, submit a request with a photo, choosing a weekday and a weekend date.
+   Peter should get the email with the photo attached; the customer address should get a confirmation.
+7. **Lock down.** Set `'selftest' => false` in `config.php`.
+8. **Search.** Add the site to Google Search Console and submit
+   `https://alwaysonelectrical.ie/sitemap.xml`. Set up a Google Business Profile for Always On
+   Electrical with the same phone number and address; the Google review link for the reviews page
+   comes from there.
 
 To turn on text alerts later: create the Twilio account, verify Peter's number, upgrade it with a
 card, then in `config.php` set `'enabled' => true` and paste the Account SID and Auth Token. Nothing
-else changes.
+else changes. Re-run the self-test afterwards; it sends one test text.
+
+## Updating the site later
+
+Edit `src/content.mjs` (or the page you need), run the build and check commands above, upload the
+changed files from `dist/`, or the whole zip again. `config.php` on the server is never overwritten by
+this, because it is not in `dist/`.
 
 ## The availability rule
 

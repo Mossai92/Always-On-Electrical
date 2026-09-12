@@ -15,3 +15,4 @@ site/dist/api/data/*
 !site/src/api/data/.gitkeep
 !site/dist/api/data/.htaccess
 !site/dist/api/data/.gitkeep
+site/*.zip

@@ -43,7 +43,7 @@ function footer() {
 </footer>`;
 }
 
-export function page({ slug, title, description, body, active = '', jsonLd = null, bodyClass = '' }) {
+export function page({ slug, title, description, body, active = '', jsonLd = null, bodyClass = '', noindex = false }) {
   const url = `${SITE.url}/${slug === 'index' ? '' : slug + '.html'}`;
   const fullTitle = slug === 'index' ? `${SITE.name} · Electrician in ${countiesProse()}` : `${title} · ${SITE.name}`;
   return `<!doctype html>
@@ -60,12 +60,18 @@ export function page({ slug, title, description, body, active = '', jsonLd = nul
 <meta property="og:description" content="${esc(description)}">
 <meta property="og:url" content="${url}">
 <meta property="og:image" content="${SITE.url}/assets/img/og-image.png">
+<meta property="og:image:width" content="1200">
+<meta property="og:image:height" content="630">
+<meta property="og:image:alt" content="${SITE.name}: electrician for homes and small businesses, ${countiesProse()}">
 <meta property="og:locale" content="en_IE">
 <meta name="twitter:card" content="summary_large_image">
+<meta name="twitter:image" content="${SITE.url}/assets/img/og-image.png">
+${noindex ? '<meta name="robots" content="noindex, nofollow">' : '<meta name="robots" content="index, follow">'}
 <meta name="theme-color" content="#201E1D">
 <link rel="icon" href="assets/img/favicon.svg" type="image/svg+xml">
 <link rel="icon" href="assets/img/favicon-32.png" sizes="32x32" type="image/png">
 <link rel="apple-touch-icon" href="assets/img/apple-touch-icon.png">
+<link rel="manifest" href="assets/site.webmanifest">
 <link rel="preload" href="assets/fonts/archivo-latin.woff2" as="font" type="font/woff2" crossorigin>
 <link rel="stylesheet" href="assets/css/site.css">
 ${jsonLd ? `<script type="application/ld+json">${JSON.stringify(jsonLd)}</script>` : ''}
