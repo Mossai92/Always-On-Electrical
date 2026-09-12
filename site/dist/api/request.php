@@ -76,41 +76,47 @@ if ($ts > 0) {
 }
 
 // ---- rate limit per IP (file based; skipped if the data folder is not writable) ----
+// Only requests that actually send count, so a customer fixing typos is never locked out.
+/** @return bool true when this IP is over the limit */
+function aoe_rate_limit(string $dataDir, string $ip, array $limit, bool $record): bool
+{
+    if (!(is_dir($dataDir) || @mkdir($dataDir, 0755, true))) {
+        return false;
+    }
+    $fh = @fopen($dataDir . '/ratelimit.json', 'c+');
+    if ($fh === false || !flock($fh, LOCK_EX)) {
+        return false;
+    }
+    $state = json_decode((string) stream_get_contents($fh), true);
+    if (!is_array($state)) {
+        $state = [];
+    }
+    $now = time();
+    $window = (int) ($limit['window'] ?? 3600);
+    $key = hash('sha256', $ip);
+    foreach ($state as $k => $list) {
+        $state[$k] = array_values(array_filter(is_array($list) ? $list : [], fn($t) => is_int($t) && $t > $now - $window));
+        if ($state[$k] === []) {
+            unset($state[$k]);
+        }
+    }
+    $over = count($state[$key] ?? []) >= (int) ($limit['count'] ?? 5);
+    if ($record && !$over) {
+        $state[$key][] = $now;
+    }
+    ftruncate($fh, 0);
+    rewind($fh);
+    fwrite($fh, json_encode($state));
+    flock($fh, LOCK_UN);
+    fclose($fh);
+    return $over;
+}
+
 $ip = aoe_client_ip();
 $limit = $cfg['rate_limit'] ?? ['count' => 5, 'window' => 3600];
-$dataDir = $cfg['data_dir'];
-if (is_dir($dataDir) || @mkdir($dataDir, 0755, true)) {
-    $rlFile = $dataDir . '/ratelimit.json';
-    $fh = @fopen($rlFile, 'c+');
-    if ($fh !== false && flock($fh, LOCK_EX)) {
-        $raw = stream_get_contents($fh);
-        $state = json_decode((string) $raw, true);
-        if (!is_array($state)) {
-            $state = [];
-        }
-        $now = time();
-        $key = hash('sha256', $ip);
-        $hits = array_values(array_filter($state[$key] ?? [], fn($t) => is_int($t) && $t > $now - (int) $limit['window']));
-        if (count($hits) >= (int) $limit['count']) {
-            flock($fh, LOCK_UN);
-            fclose($fh);
-            aoe_log($cfg, 'rate-limited');
-            aoe_fail(429, 'That is a few requests in a row from this connection. Please wait a while, or call instead.', [], $wantsJson, $backHref, $cfg);
-        }
-        $hits[] = $now;
-        $state[$key] = $hits;
-        foreach ($state as $k => $list) {
-            $state[$k] = array_values(array_filter($list, fn($t) => is_int($t) && $t > $now - (int) $limit['window']));
-            if ($state[$k] === []) {
-                unset($state[$k]);
-            }
-        }
-        ftruncate($fh, 0);
-        rewind($fh);
-        fwrite($fh, json_encode($state));
-        flock($fh, LOCK_UN);
-        fclose($fh);
-    }
+if (aoe_rate_limit($cfg['data_dir'], $ip, $limit, false)) {
+    aoe_log($cfg, 'rate-limited');
+    aoe_fail(429, 'That is a few requests in a row from this connection. Please wait a while, or call instead.', [], $wantsJson, $backHref, $cfg);
 }
 
 // ---- fields ----
@@ -223,6 +229,7 @@ if (!$mailOk) {
     aoe_log($cfg, 'error mail-to-peter failed');
     aoe_fail(500, 'The request could not be sent just now. Please try again in a few minutes, or call.', [], $wantsJson, $backHref, $cfg);
 }
+aoe_rate_limit($cfg['data_dir'], $ip, $limit, true);
 
 // ---- text alert (the switch lives in config) ----
 $jobFlat = preg_replace('/\s+/', ' ', $job) ?? $job;

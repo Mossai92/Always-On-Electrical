@@ -1,6 +1,6 @@
 // Builds the static site into dist/ (what gets uploaded to public_html on Eirhost).
 // Usage: node build.mjs   (run from the site/ folder)
-import { mkdirSync, writeFileSync, cpSync, rmSync, existsSync } from 'node:fs';
+import { mkdirSync, writeFileSync, readFileSync, cpSync, rmSync, existsSync } from 'node:fs';
 import { fileURLToPath } from 'node:url';
 import { dirname, join } from 'node:path';
 import { SITE } from './src/content.mjs';
@@ -10,6 +10,9 @@ const root = dirname(fileURLToPath(import.meta.url));
 const src = join(root, 'src');
 const dist = join(root, 'dist');
 
+// keep a local api/config.php across rebuilds (it is never committed)
+const localConfig = join(dist, 'api', 'config.php');
+const keptConfig = existsSync(localConfig) ? readFileSync(localConfig) : null;
 rmSync(dist, { recursive: true, force: true });
 mkdirSync(dist, { recursive: true });
 
@@ -27,6 +30,7 @@ for (const [name, render] of PAGES) writeFileSync(join(dist, name), render());
 
 cpSync(join(src, 'assets'), join(dist, 'assets'), { recursive: true });
 if (existsSync(join(src, 'api'))) cpSync(join(src, 'api'), join(dist, 'api'), { recursive: true, filter: (p) => !/config\.php$/.test(p) || p.endsWith('config.example.php') });
+if (keptConfig) writeFileSync(localConfig, keptConfig);
 
 const today = new Date().toISOString().slice(0, 10);
 writeFileSync(join(dist, 'sitemap.xml'), `<?xml version="1.0" encoding="UTF-8"?>
