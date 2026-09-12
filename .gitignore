@@ -1,0 +1,8 @@
+node_modules/
+# generated or scratch design output (rebuilt by brand/build*.mjs and the canvas seeder)
+brand/preview/
+brand/saved-*/
+brand/always-on-electrical-logo.html
+*.log
+.DS_Store
+Thumbs.db

@@ -1,0 +1,103 @@
+{
+  "pages": [
+    {
+      "id": "page-1",
+      "name": "Home page"
+    },
+    {
+      "id": "page-2",
+      "name": "Reviews page"
+    },
+    {
+      "id": "page-3",
+      "name": "Logo directions"
+    }
+  ],
+  "artboards": [
+    {
+      "file": "Main.dc.html",
+      "x": 0,
+      "y": 0,
+      "w": 1440,
+      "h": 4300,
+      "title": "Home · desktop",
+      "page": "page-1"
+    },
+    {
+      "file": "HomeMobile.dc.html",
+      "x": 1540,
+      "y": 0,
+      "w": 390,
+      "h": 6200,
+      "title": "Home · mobile",
+      "page": "page-1"
+    },
+    {
+      "file": "Brand.dc.html",
+      "x": 2030,
+      "y": 0,
+      "w": 1100,
+      "h": 960,
+      "title": "Mark, lockup and button",
+      "page": "page-1"
+    },
+    {
+      "file": "Reviews.dc.html",
+      "x": 0,
+      "y": 0,
+      "w": 1440,
+      "h": 2100,
+      "title": "Reviews · desktop",
+      "page": "page-2"
+    },
+    {
+      "file": "ReviewsMobile.dc.html",
+      "x": 1540,
+      "y": 0,
+      "w": 390,
+      "h": 2960,
+      "title": "Reviews · mobile",
+      "page": "page-2"
+    },
+    {
+      "file": "Overview.dc.html",
+      "x": 0,
+      "y": 0,
+      "w": 1100,
+      "h": 640,
+      "title": "Overview (superseded)",
+      "page": "page-3"
+    },
+    {
+      "file": "Standby.dc.html",
+      "x": 0,
+      "y": 800,
+      "w": 1100,
+      "h": 1500,
+      "title": "A · Standby",
+      "page": "page-3"
+    },
+    {
+      "file": "Slide.dc.html",
+      "x": 1200,
+      "y": 800,
+      "w": 1100,
+      "h": 1500,
+      "title": "B · Slide",
+      "page": "page-3"
+    },
+    {
+      "file": "Rocker.dc.html",
+      "x": 2400,
+      "y": 800,
+      "w": 1100,
+      "h": 1500,
+      "title": "C · Rocker",
+      "page": "page-3"
+    }
+  ],
+  "launch": {
+    "view": "canvas",
+    "page": "page-1"
+  }
+}

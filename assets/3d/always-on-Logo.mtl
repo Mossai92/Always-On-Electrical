@@ -1,0 +1,19 @@
+# Exported by three-d-stage
+newmtl brushed_steel
+Kd 0.5841 0.6038 0.6172
+Ks 0.2000 0.2000 0.2000
+Ns 136
+d 1.0000
+
+newmtl graphite
+Kd 0.0144 0.0130 0.0123
+Ks 0.2000 0.2000 0.2000
+Ns 80
+d 1.0000
+
+newmtl signal_red
+Kd 0.8388 0.0296 0.0065
+Ks 0.2000 0.2000 0.2000
+Ns 120
+d 1.0000
+
