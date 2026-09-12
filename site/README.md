@@ -83,6 +83,21 @@ To turn on text alerts later: create the Twilio account, verify Peter's number, 
 card, then in `config.php` set `'enabled' => true` and paste the Account SID and Auth Token. Nothing
 else changes. Re-run the self-test afterwards; it sends one test text.
 
+## Sharing a preview before launch
+
+```bash
+cd site && node build.mjs --demo
+```
+
+`dist-demo/` is a preview build: facts we do not have yet are left out rather than shown in brackets,
+the reviews page is kept out of the menu, every page is marked not to be indexed, and the form shows a
+"this is a preview" message instead of sending. It is published on the `gh-pages` branch and served by
+GitHub Pages at https://mossai92.github.io/Always-On-Electrical/ (enable Pages in the repository
+settings the first time: Settings, Pages, "Deploy from a branch", branch `gh-pages`, folder `/`).
+
+To update the preview: rebuild with `--demo`, then copy `dist-demo/` onto the `gh-pages` branch and
+push it.
+
 ## Updating the site later
 
 Edit `src/content.mjs` (or the page you need), run the build and check commands above, upload the
