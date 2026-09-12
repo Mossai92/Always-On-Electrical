@@ -32,6 +32,7 @@
     var note = block.querySelector('[data-note]');
     var chips = Array.prototype.slice.call(block.querySelectorAll('.chip'));
     if (!input) return;
+    if (block.aoeApply) { block.aoeApply(); return; } // already wired: just re-apply after a reset
     var today = new Date();
     input.min = today.getFullYear() + '-' + String(today.getMonth() + 1).padStart(2, '0') + '-' + String(today.getDate()).padStart(2, '0');
 
@@ -69,6 +70,7 @@
       note.classList.toggle('is-weekday', !weekend);
       paint();
     }
+    block.aoeApply = apply;
     input.addEventListener('change', apply);
     input.addEventListener('input', apply);
     chips.forEach(function (chip) {

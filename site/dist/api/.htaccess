@@ -1,0 +1,7 @@
+# The request handler folder. Only request.php and selftest.php are reachable from the web.
+<FilesMatch "^(config\.php|config\.example\.php)$">
+  Require all denied
+</FilesMatch>
+<FilesMatch "\.(log|json)$">
+  Require all denied
+</FilesMatch>

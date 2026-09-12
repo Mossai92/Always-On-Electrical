@@ -6,3 +6,12 @@ brand/always-on-electrical-logo.html
 *.log
 .DS_Store
 Thumbs.db
+# handler secrets and runtime state
+site/src/api/config.php
+site/dist/api/config.php
+site/src/api/data/*
+site/dist/api/data/*
+!site/src/api/data/.htaccess
+!site/src/api/data/.gitkeep
+!site/dist/api/data/.htaccess
+!site/dist/api/data/.gitkeep
